@@ -49,7 +49,7 @@ Press Y or y for **Production** Deploy, otherwise is a **Development** Deploy
 Accessing Your App API via:
 
 ```curl
-http://localhost:{PORT}
+http://localhost:{PORT}/api
 ```
 
 _{PORT}_ depends on your .env parameter **OUT_PORT**
