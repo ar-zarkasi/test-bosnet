@@ -13,8 +13,6 @@ import (
 func runSqlServer() {
 	globalDb = connectSqlServer()
 	MigrateEntityModels(globalDb, &models.Config{}, &models.Counter{}, &models.Balance{}, &models.History{})
-	// stringPathModel := "app/src/models/"
-	// MigrateModels(globalDb, stringPathModel)
 }
 
 func connectSqlServer() *gorm.DB {
