@@ -1,0 +1,60 @@
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: ${DB_HOST}
+    user: root
+    environment:
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: Y
+    restart: always
+    ports:
+      - ${DB_PORT}:1433
+    volumes:
+      - ${DB_VOLUME}:/var/opt/mssql/data
+      - ./build/init-db.sql:/init/db.sql
+    command: >
+      /bin/bash -c " 
+      /opt/mssql/bin/sqlservr & 
+      sleep 30s && 
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U ${DB_USER} -P ${DB_PASSWORD} -C -i /init/db.sql &&
+      wait
+      "
+  dev:
+    image: ${DOCKER_IMAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: ${DOCKER_CONTAINER}
+    restart: always
+    environment:
+      - PORT=${IN_PORT}
+    depends_on:
+      - database
+    env_file:
+      - .env
+    ports:
+      - ${OUT_PORT}:${IN_PORT}
+    volumes:
+      - ./:/go/src/app
+  prod:
+    image: ${DOCKER_IMAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: ${DOCKER_CONTAINER}
+    restart: always
+    environment:
+      - PORT=${IN_PORT}
+      - GIN_MODE=release
+    depends_on:
+      - database
+    env_file:
+      - .env
+    ports:
+      - ${OUT_PORT}:${IN_PORT}
+    volumes:
+      - ${LOG_PATH}/:/go/src/app/logs
+networks:
+  default:
+    name: "${NETWORK_NAME}"
+    driver: bridge

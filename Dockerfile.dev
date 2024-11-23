@@ -1,0 +1,23 @@
+FROM golang:1.23.2
+
+RUN apt-get update
+RUN apt-get install -y sudo nano
+
+# env system
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:$PATH
+
+# set local time
+RUN ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
+RUN echo "Asia/Jakarta" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata
+ENV TZ=Asia/Jakarta
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# set working dir
+RUN mkdir -p /go/src/app
+WORKDIR /go/src/app
+
+RUN go install github.com/codegangsta/gin@latest
+
+CMD gin -i -a ${PORT} run main.go
+

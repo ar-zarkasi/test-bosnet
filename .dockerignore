@@ -1,0 +1,14 @@
+docker-compose.yaml
+Dockerfile*
+.env*
+.git
+_DS_Store
+README*
+build
+runner.conf
+gin-bin
+logs/*
+deploy.bat
+deploy.sh
+deploy_redhat.sh
+.database/

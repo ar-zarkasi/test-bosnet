@@ -1,0 +1,5 @@
+.env
+gin-bin
+log/*
+logs/*
+.database/
